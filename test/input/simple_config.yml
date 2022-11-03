@@ -1,0 +1,12 @@
+mqtt:
+  host: localhost
+  port: 1883
+  base_topic: topic
+  qos: 1
+
+
+paired_devices:
+  - name: pair
+    sensor_topic: sensor
+    thermostat_topic: thermostat
+    calibration_sub_topic: set/local_temperature_calibration

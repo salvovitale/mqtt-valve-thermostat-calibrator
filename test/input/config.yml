@@ -1,0 +1,28 @@
+mqtt:
+  host: 192.168.1.99
+  port: 1883
+  base_topic: zigbee2mqtt
+  qos: 2
+
+
+paired_devices:
+  - name: living_room_radiator
+    sensor_topic: living_room/temp_sensor
+    thermostat_topic: living_room/thermo_valve
+    calibration_sub_topic: set/local_temperature_calibration
+  - name: kids_bedroom_radiator
+    sensor_topic: kids_bedroom/temp_sensor
+    thermostat_topic: kids_bedroom/thermo_valve
+    calibration_sub_topic: set/local_temperature_calibration
+  - name: office_radiator
+    sensor_topic: office/temp_sensor
+    thermostat_topic: office/thermo_valve
+    calibration_sub_topic: set/local_temperature_calibration
+  - name: bathroom_radiator
+    sensor_topic: bathroom/temp_sensor
+    thermostat_topic: bathroom/thermo_valve
+    calibration_sub_topic: set/local_temperature_calibration
+  - name: master_bedroom_radiator
+    sensor_topic: master_bedroom/temp_sensor
+    thermostat_topic: master_bedroom/thermo_valve
+    calibration_sub_topic: set/local_temperature_calibration
