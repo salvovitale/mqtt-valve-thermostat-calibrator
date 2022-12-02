@@ -11,4 +11,7 @@ mosquitto-down:
 	rm -rf /tmp/mosquitto
 
 run:
-	go run cmd/calibrator/main.go --path test/input/config.yml
+	go run cmd/calibrator/main.go --path test/input/simple_config.yml
+
+build-image:
+	docker build -t calibrator:latest .

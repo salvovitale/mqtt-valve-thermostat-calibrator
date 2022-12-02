@@ -1,0 +1,8 @@
+version: '3.2'
+
+services:
+  cassandra:
+    container_name: calibrator
+    image: calibrator
+    volumes:
+      - './test/input/simple_config.yml:/config.yml'

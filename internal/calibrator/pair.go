@@ -62,7 +62,7 @@ func (p *PairedSensors) Initialize(brokerUrl string, dev config.PairedSensorsCon
 	publishFullTopic := fmt.Sprintf("%s/%s/%s", mqttConfig.BaseTopic, dev.ThermostatTopic, dev.CalibrationSubTopic)
 	clientId := fmt.Sprintf("%s-%s", dev.ThermostatTopic, "publisher")
 	wg.Add(1)
-	go handlePublicationToTopic(brokerUrl, publishFullTopic, clientId, mqttConfig.QoS, p.messageHandlerThermostat, p.donePublishing, p.publishingCh, &wg)
+	go handlePublicationToTopic(brokerUrl, publishFullTopic, clientId, mqttConfig.QoS, mqttConfig.Delay, p.messageHandlerThermostat, p.donePublishing, p.publishingCh, &wg)
 	wg.Wait()
 }
 
@@ -99,22 +99,31 @@ func subscribeToTopic(brokerUrl string, topic string, clientID string, qos int, 
 	wg.Done()
 }
 
-func handlePublicationToTopic(brokerUrl string, topic string, clientID string, qos int, messageHandler mqtt.MessageHandler, done chan struct{}, publishingCh chan float64, wg *sync.WaitGroup) {
+func handlePublicationToTopic(brokerUrl string, topic string, clientID string, qos int, delayInSeconds int, messageHandler mqtt.MessageHandler, done chan struct{}, publishingCh chan float64, wg *sync.WaitGroup) {
 	mqttClient, err := pubsub.New(brokerUrl, topic, clientID, qos)
+
 	if err != nil {
 		log.Error().Err(err).Msg("Error creating mqtt client")
 	}
+	delayTime := time.NewTicker(time.Duration(delayInSeconds) * time.Second)
+	canPublishMessage := false
 	for {
 		select {
+		case <-delayTime.C:
+			canPublishMessage = true
 		case c := <-publishingCh:
-			calibrationPayload := fmt.Sprintf("%.1f", c)
-			log.Info().Msgf("Publishing calibration payload %s to topic %s", calibrationPayload, topic)
-			payload, err := json.Marshal(calibrationPayload)
-			if err != nil {
-				log.Error().Err(err).Msg("Error marshalling payload")
-			}
-			if err := mqttClient.Publish(payload); err != nil {
-				log.Error().Err(err).Msgf("Error publishing calibration to topic %s", topic)
+			log.Info().Msg("Received message for publishing")
+			if canPublishMessage {
+				calibrationPayload := fmt.Sprintf("%.1f", c)
+				log.Info().Msgf("Publishing calibration payload %s to topic %s", calibrationPayload, topic)
+				payload, err := json.Marshal(calibrationPayload)
+				if err != nil {
+					log.Error().Err(err).Msg("Error marshalling payload")
+				}
+				if err := mqttClient.Publish(payload); err != nil {
+					log.Error().Err(err).Msgf("Error publishing calibration to topic %s", topic)
+				}
+				canPublishMessage = false
 			}
 		case <-done:
 			log.Info().Msg("exiting handling publication message routine")

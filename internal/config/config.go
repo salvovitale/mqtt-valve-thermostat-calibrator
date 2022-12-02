@@ -16,6 +16,7 @@ type MqttConfig struct {
 	Port      int    `yaml:"port"`
 	BaseTopic string `yaml:"base_topic"`
 	QoS       int    `yaml:"qos"`
+	Delay     int    `yaml:"delay"`
 }
 
 type PairedSensorsConfig struct {

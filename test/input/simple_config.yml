@@ -1,8 +1,9 @@
 mqtt:
-  host: localhost
+  host: host.docker.internal
   port: 1883
   base_topic: topic
   qos: 1
+  delay: 120
 
 
 paired_devices:

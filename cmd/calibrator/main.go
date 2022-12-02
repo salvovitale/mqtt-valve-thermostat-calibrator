@@ -6,20 +6,15 @@ import (
 	"os/signal"
 	"syscall"
 
-	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/rs/zerolog/log"
 	"github.com/salvovitale/mqtt-valve-thermostat-calibrator/internal/calibrator"
 	"github.com/salvovitale/mqtt-valve-thermostat-calibrator/internal/config"
 )
 
-var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Message) {
-	log.Info().Msgf("Message %s received on topic %s\n", msg.Payload(), msg.Topic())
-}
-
 var configPath string
 
 func init() {
-	flag.StringVar(&configPath, "path", "input/config.yml", "config file")
+	flag.StringVar(&configPath, "path", "config.yml", "config file")
 }
 
 func main() {

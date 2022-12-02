@@ -2,7 +2,8 @@ mqtt:
   host: 192.168.1.99
   port: 1883
   base_topic: zigbee2mqtt
-  qos: 2
+  qos: 1
+  delay: 300
 
 
 paired_devices:
