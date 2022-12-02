@@ -7,11 +7,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN go mod download
-
-COPY *.go ./
-
-RUN go build -o /calibrator cmd/calibrator/main.go
+RUN go build -ldflags="-s -w" -mod vendor -o /calibrator cmd/calibrator/main.go
 
 ## Deploy
 FROM gcr.io/distroless/base-debian10
