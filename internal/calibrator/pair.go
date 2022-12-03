@@ -143,28 +143,24 @@ func handleMessage(thermostatCh chan model.Thermostat, sensorCh chan model.Senso
 		select {
 		case t := <-thermostatCh:
 			newMeasuredTemperature := t.Temperature - t.Calibration
-			if newMeasuredTemperature != thermostatMeasuredTemperatureLastValue {
-				log.Info().Msgf("Thermostat measured temperature: %f", newMeasuredTemperature)
-				thermostatMeasuredTemperatureLastValue = newMeasuredTemperature
-				if sensorTemperatureLastValue > 0.0 {
-					newCalibration := calibrate(sensorTemperatureLastValue, thermostatMeasuredTemperatureLastValue)
-					log.Info().Msgf("New calibration: %f", newCalibration)
-					publishingCh <- newCalibration
-				} else {
-					log.Info().Msg("No sensor temperature value available yet")
-				}
+			log.Info().Msgf("Thermostat measured temperature: %f", newMeasuredTemperature)
+			thermostatMeasuredTemperatureLastValue = newMeasuredTemperature
+			if sensorTemperatureLastValue > 0.0 {
+				newCalibration := calibrate(sensorTemperatureLastValue, thermostatMeasuredTemperatureLastValue)
+				log.Info().Msgf("New calibration: %f", newCalibration)
+				publishingCh <- newCalibration
+			} else {
+				log.Info().Msg("No sensor temperature value available yet")
 			}
 		case s := <-sensorCh:
-			if s.Temperature != sensorTemperatureLastValue {
-				log.Info().Msgf("handling sensor message: %v", s)
-				sensorTemperatureLastValue = s.Temperature
-				if thermostatMeasuredTemperatureLastValue > 0.0 {
-					newCalibration := calibrate(sensorTemperatureLastValue, thermostatMeasuredTemperatureLastValue)
-					log.Info().Msgf("New calibration: %f", newCalibration)
-					publishingCh <- newCalibration
-				} else {
-					log.Info().Msg("No thermostat temperature value available yet")
-				}
+			log.Info().Msgf("handling sensor message: %v", s)
+			sensorTemperatureLastValue = s.Temperature
+			if thermostatMeasuredTemperatureLastValue > 0.0 {
+				newCalibration := calibrate(sensorTemperatureLastValue, thermostatMeasuredTemperatureLastValue)
+				log.Info().Msgf("New calibration: %f", newCalibration)
+				publishingCh <- newCalibration
+			} else {
+				log.Info().Msg("No thermostat temperature value available yet")
 			}
 		case <-done:
 			log.Info().Msg("exiting handling message routine")
